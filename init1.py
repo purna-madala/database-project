@@ -46,9 +46,67 @@ def allowed_image_filesize(filesize):
 
 
 #Define a route to hello function
-@app.route('/')
-def hello():
-    return render_template('index.html')
+# @app.route('/')
+# def hello():
+#     return render_template('index.html')
+
+@app.route("/")
+def index():
+ 
+  query = request.args.get("q")
+
+  songs = search_songs(query)
+
+  return render_template("index.html")
+
+@app.route("/browse")
+def browse():
+ 
+
+  genre = request.args.get("genre")
+  rating_threshold = request.args.get("rating_threshold")
+  artist = request.args.get("artist")
+  songs = browse_songs(genre, rating_threshold, artist)
+  return render_template("browse.html", songs=songs)
+
+
+def search_songs(query):
+
+
+  cursor = conn.cursor()
+
+  cursor.execute('SELECT title, artist, album FROM song WHERE title LIKE "%{}%"'.format(query))
+
+  results = cursor.fetchall()
+
+  cursor.close()
+
+  return results
+
+
+def browse_songs(genre, rating_threshold, artist):
+
+  cursor = conn.cursor()
+
+  if genre is not None:
+    query = 'SELECT title, artist, album FROM song WHERE genre = %s AND rating >= %s'
+    cursor.execute(query, (genre, rating_threshold))
+  if rating_threshold is not None:
+    query = 'SELECT title, artist, album FROM song WHERE rating >= %s'
+    cursor.execute(query, (rating_threshold,))
+  if artist is not None:
+    query = 'SELECT title, artist, album FROM song WHERE artist = %s'
+    cursor.execute(query, (artist,))
+  else:
+    query = 'SELECT title, artist, album FROM song'
+    cursor.execute(query)
+
+  results = cursor.fetchall()
+
+  cursor.close()
+
+  return results
+
 
 #Define route for login
 @app.route('/login')
@@ -86,6 +144,33 @@ def loginAuth():
         #returns an error message to the html page
         error = 'Invalid login or username'
         return render_template('login.html', error=error)
+    
+@app.route("/new")
+def new():
+ 
+  username =  session['username']
+#   reviewDate = 
+
+  # Get the user's friends and followers.
+  cursor = conn.cursor()
+  cursor.execute('SELECT * FROM friends WHERE username = %s', (username,))
+  friends = cursor.fetchall()
+  cursor.execute('SELECT * FROM followers WHERE username = %s', (username,))
+  followers = cursor.fetchall()
+
+  # Get the list of new reviews.
+  cursor.execute('SELECT * FROM reviews')
+  new_reviews = cursor.fetchall()
+
+  # Get the list of new songs by artists the user is a fan of.
+  cursor.execute ('SELECT * FROM song WHERE artist_id IN (SELECT id FROM artists WHERE id IN (SELECT favorite_artist_id FROM users')
+  new_songs = cursor.fetchall()
+
+  # Close the cursor.
+  cursor.close()
+
+  # Render the new items of interest page.
+  return render_template("new.html", friends=friends, followers=followers, new_reviews=new_reviews, new_songs=new_songs)
 
 #Authenticates the register
 @app.route('/registerAuth', methods=['GET', 'POST'])

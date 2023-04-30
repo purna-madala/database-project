@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Items of Interest</title>
+</head>
+<body>
+  <h1>New Items of Interest</h1>
+  <h2>New Reviews</h2>
+  <ul>
+  {% for review in new_reviews %}
+    <li>
+      <a href="/review/{{ review.id }}">{{ review.title }}</a>
+      by {{ review.author.username }}
+      on {{ review.created_at }}
+    </li>
+  {% endfor %}
+  </ul>
+  <h2>New Songs</h2>
+  <ul>
+  {% for song in new_songs %}
+    <li>
+      <a href="/song/{{ song.id }}">{{ song.title }}</a>
+      by {{ song.artist.name }}
+      on {{ song.created_at }}
+    </li>
+  {% endfor %}
+  </ul>
+</body>
+</html>

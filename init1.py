@@ -107,6 +107,30 @@ def browse_songs(genre, rating_threshold, artist):
 
   return results
 
+@app.route('/rateSong', methods=['POST'])
+def rateSong():
+    username = session['username']
+    cursor = conn.cursor()
+    songID_input = request.form['Song']
+    rating_input = request.form['rateSong']
+    query = 'INSERT INTO rateSong (username, songID, stars) VALUES(%s, %s, %s)'
+    cursor.execute(query, (username, songID_input, int(rating_input)))
+    conn.commit()
+    cursor.close()
+    return redirect(url_for('home'))
+
+@app.route('/reviewFriend', methods=['GET','POST'])
+def reviewFriendFollower():
+    username_input = session['username']
+    cursor = conn.cursor()
+
+    query = 'SELECT reviewText FROM reviewSong, friend WHERE reviewSong.username <> %s AND (friend.user1 = %s OR friend.user2 = %s) AND friend.acceptStatus = "Accepted"'
+    cursor.execute(query, (username_input,username_input,username_input))
+    data = cursor.fetchall()
+
+    conn.commit()
+    cursor.close()
+    return render_template('reviewFriend.html', posts=data)
 
 #Define route for login
 @app.route('/login')

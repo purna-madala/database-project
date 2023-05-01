@@ -1,0 +1,38 @@
+<html>
+<head>
+</head>
+<body>
+
+<style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+</style>
+
+<!-- Here are posts by {{poster_name}}: -->
+
+<table>
+	<th>Song</th>
+    <th>Artist</th>
+
+{% for line in posts %}
+	<tr>
+		<td>{{line.title}}</td>
+        <td>{{line.fname}}</td>
+        <td>{{line.lname}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<br>
+<br>
+<br>
+<a href="/home">Post a message</a>
+<br>
+<br>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

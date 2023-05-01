@@ -1,19 +1,84 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FatEar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+    
+    a {
+      text-decoration: none;
+      color: black;
+    }
+    
+    .container {
+      width: 500px;
+      margin: 50px auto;
+      text-align: center;
+      background-color: #f2f2f2;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #333333;
+    }
+    
+    input[type="text"],
+    input[type="password"] {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    
+    input[type="submit"] {
+      background-color: #0000FF;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      width: 100%;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    
+    input[type="submit"]:hover {
+      background-color: #1E90FF;
+    }
+    
+    .error {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-<form action="/loginAuth" method="POST">
-	<input type="text" name = "username" placeholder="username" required/> </br>
-	<input type="password" name = "password" placeholder="password" required/></br>
-	<input type="submit" value = Login />
-	{% if error %}
-		<p class="error"><strong>Error:</strong> {{error}}</p>
-	{% endif %}
-</form>
-
-<a href="/">Go back</a>
-
+  <div class="container">
+    <h1>FatEar</h1>
+    <form action="/loginAuth" method="POST">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <input type="submit" value="Login">
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{error}}</p>
+      {% endif %}
+    </form>
+    <a href="/">Go back</a>
+  </div>
 </body>
-
-
 </html>

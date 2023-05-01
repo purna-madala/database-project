@@ -45,69 +45,84 @@ def allowed_image_filesize(filesize):
         return False
 
 
-#Define a route to hello function
-# @app.route('/')
-# def hello():
-#     return render_template('index.html')
+# Define a route to hello function
+@app.route('/')
+def hello():
+  return render_template('index.html')
 
-@app.route("/")
-def index():
+# @app.route("/")
+# def index():
  
-  query = request.args.get("q")
+#   query = request.args.get("q")
 
-  songs = search_songs(query)
+#   songs = search_songs(query)
 
-  return render_template("index.html")
+#   return render_template("index.html")
+@app.route("/showsearchBar", methods=['GET','POST'])
+def show_bar():
+    return render_template('browse.html')
 
-@app.route("/browse")
-def browse():
- 
+@app.route("/searchSong", methods=['GET','POST'])
+def search_post():
+    cursor = conn.cursor()
+    genre_input = request.form['genre']
+    rating_input = request.form['rating']
+    fname_input, lname_input = request.form['artist']
+    #User inputs all 3
+    if genre_input is not None and rating_input is not None and fname_input is not None and lname_input != '':
+        query = 'SELECT songID, title, artist FROM song WHERE genre = %s AND stars = %s '
+        cursor.execute(query, (genre_input, rating_input, lname_input, fname_input))
+        data = cursor.fetchall()
+        conn.commit()
+        cursor.close()
+        return render_template('show_search.html', posts = data)
+    # User only inputs genre
+    elif genre_input is not None and rating_input is None and fname_input is None and lname_input is None:
+        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE genre = (genre_input) VALUES (%s)'
+        cursor.execute(query, (genre_input))
+        data = cursor.fetchall()
+        conn.commit()
+        cursor.close()
+        return render_template('show_search.html', posts = data)
+    #User only inputs rating
+    elif genre_input is None and rating_input is not None and fname_input is None and lname_input is None:
+        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE stars = (rating_input) VALUES (%s)'
+        cursor.execute(query, (rating_input))
+        conn.commit()
+        cursor.close()
+        return render_template('show_search.html', posts = data)
+    #User only inputs artist
+    elif genre_input is None and rating_input is None and fname_input is not None and lname_input is not None:
+        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE fname = (fname_input) and lname = (lname_input) VALUES (%s,%s)'
+        cursor.execute(query, (lname_input, fname_input))
+        conn.commit()
+        cursor.close()
+        return render_template('show_search.html', posts = data)
+    #User inputs genre and rating but no artist
+    elif genre_input is not None and rating_input is not None and fname_input is None and lname_input is None:
+        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE genre = (genre_input) and stars = (rating_input) VALUES (%s,%s)'
+        cursor.execute(query, (genre_input, rating_input))
+        conn.commit()
+        cursor.close()
+        return render_template('show_search.html', posts = data)
+    #User inputs genre and artist but no rating
+    elif genre_input is not None and rating_input is None and fname_input is not None and lname_input is not None:
+        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE genre = (genre_input) and fname = (fname_input) and lname = (lname_input) VALUES (%s,%s,%s)'
+        cursor.execute(query, (genre_input, lname_input, fname_input))
+        conn.commit()
+        cursor.close()
+        return render_template('show_search.html', posts = data)
+    #User inputs rating and artist but not genre
+    elif genre_input is None and rating_input is not None and fname_input is not None and lname_input is not None:
+        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE stars = (rating_input) and fname = (fname_input) and lname = (lname_input) VALUES (%s,%s,%s)'
+        cursor.execute(query, (rating_input, lname_input, fname_input))
+        conn.commit()
+        cursor.close()
+        return render_template('show_search.html', )
+    else:
+         return redirect(url_for('index'))
 
-  genre = request.args.get("genre")
-  rating_threshold = request.args.get("rating_threshold")
-  artist = request.args.get("artist")
-  songs = browse_songs(genre, rating_threshold, artist)
-  return render_template("browse.html", songs=songs)
-
-
-def search_songs(query):
-
-
-  cursor = conn.cursor()
-
-  cursor.execute('SELECT title, artist, album FROM song WHERE title LIKE "%{}%"'.format(query))
-
-  results = cursor.fetchall()
-
-  cursor.close()
-
-  return results
-
-
-def browse_songs(genre, rating_threshold, artist):
-
-  cursor = conn.cursor()
-
-  if genre is not None:
-    query = 'SELECT title, artist, album FROM song WHERE genre = %s AND rating >= %s'
-    cursor.execute(query, (genre, rating_threshold))
-  if rating_threshold is not None:
-    query = 'SELECT title, artist, album FROM song WHERE rating >= %s'
-    cursor.execute(query, (rating_threshold,))
-  if artist is not None:
-    query = 'SELECT title, artist, album FROM song WHERE artist = %s'
-    cursor.execute(query, (artist,))
-  else:
-    query = 'SELECT title, artist, album FROM song'
-    cursor.execute(query)
-
-  results = cursor.fetchall()
-
-  cursor.close()
-
-  return results
-
-@app.route('/rateSong', methods=['POST'])
+@app.route('/rateSong', methods=['GET','POST'])
 def rateSong():
     username = session['username']
     cursor = conn.cursor()
@@ -118,6 +133,19 @@ def rateSong():
     conn.commit()
     cursor.close()
     return redirect(url_for('home'))
+
+@app.route('/reviewSong', methods=['GET','POST'])
+def reviewSong():
+    username = session['username']
+    cursor = conn.cursor()
+    songID_input = request.form['Song']
+    review_input = request.form['reviewSong']
+    query = 'INSERT INTO reviewSong (username, songID, reviewText) VALUES(%s, %s, %s)'
+    cursor.execute(query, (username, songID_input,review_input))
+    conn.commit()
+    cursor.close()
+    return redirect(url_for('home'))
+
 
 @app.route('/reviewFriend', methods=['GET','POST'])
 def reviewFriendFollower():
@@ -169,6 +197,54 @@ def loginAuth():
         error = 'Invalid login or username'
         return render_template('login.html', error=error)
     
+
+
+@app.route("/showFriendRequest", methods=['GET','POST'])
+def show():
+    username=session['username']
+    cursor = conn.cursor()
+    query = 'SELECT requestSentBy FROM friend WHERE user2=%s AND acceptStatus="Pending"'
+    cursor.execute(query,(username))
+    data=cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    return render_template('showFriendRequest.html',posts=data)
+
+@app.route("/sendFriendRequest", methods=['GET','POST'])
+def send():
+    username=session['username']
+    cursor = conn.cursor()
+    query = 'SELECT requestSentBy FROM friend WHERE user2=%s AND acceptStatus="Pending"'
+    cursor.execute(query,(username))
+    data=cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    return render_template('showFriendRequest.html',posts=data)
+
+
+@app.route('/submit-data', methods=['POST'])
+def submit_data():
+    username=session['username']
+    cursor=conn.cursor()
+    input_data = request.form['input-data']
+    submit_btn = request.form['submit-btn']
+
+    if submit_btn == 'accept':
+        # Store data in the database as accepted
+        query='UPDATE friend SET acceptStatus = %s WHERE user1 = %s AND user2 = %s'
+        cursor.execute(query,(submit_btn,input_data,username))
+        conn.commit()
+    else:
+        # Store data in the database as rejected
+        query='UPDATE friend SET acceptStatus = %s WHERE user1 = %s AND user2 = %s'
+        cursor.execute(query,(submit_btn,input_data,username))
+        conn.commit()
+
+    cursor.close()
+    return redirect(url_for('home'))
+
+
+
 @app.route("/new")
 def new():
  
@@ -233,6 +309,17 @@ def home():
     data = cursor.fetchall()
     cursor.close()
     return render_template('home.html', username=user, posts=data)
+
+@app.route('/artistFan', methods=['GET','POST'])
+def artistFan():
+    username = session['username']
+    cursor = conn.cursor();
+    query = 'SELECT title, fname, lname FROM userFanOfArtist NATURAL JOIN artist NATURAL JOIN artistPerformsSong NATURAL JOIN song WHERE username = %s'
+    cursor.execute(query, username)
+    data = cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    return render_template('artistFan.html', posts=data)
 
         
 @app.route('/post', methods=['GET', 'POST'])

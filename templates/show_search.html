@@ -1,0 +1,42 @@
+<html>
+<head>
+</head>
+<body>
+
+<style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+</style>
+
+Search Results:
+
+<table>
+	<th>Song ID</th>
+	<th>Title</th>
+    <th>Artist First Name</th>
+    <th>Artist Last Name</th>
+    <th>Album ID</th>
+
+{% for line in posts %}
+	<tr>
+		<td>{{line.songID}}</td>
+		<td>{{line.title}}</td>
+		<td>{{line.fname}}</td>
+		<td>{{line.lname}}</td>
+		<td>{{line.albumID}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<br>
+<br>
+<a href="/home">Post a message</a>
+<br>
+<br>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

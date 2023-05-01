@@ -1,0 +1,41 @@
+<html>
+<head>
+</head>
+<body>
+
+<style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+</style>
+
+Hi {{username}}, here are your friend requests:
+
+<table>
+	<th>Requests</th>
+
+{% for line in posts %}
+	<tr>
+		<td>{{line.requestSentBy}}</td>
+	</tr>
+{% endfor %}
+</table>
+<form method="POST" action="/submit-data">
+    <label for="input-box">Enter username:</label>
+    <input type="text" id="input-box" name="input-data">
+  
+    <button type="submit" name="submit-btn" value="Accepted">Accept</button>
+    <button type="submit" name="submit-btn" value="Not accepted">Reject</button>
+  </form>
+<br>
+<br>
+<br>
+<a href="/home">Post a message</a>
+<br>
+<br>
+<a href="/logout">Logout</a>
+
+</body>
+
+
+</html>

@@ -1,16 +1,45 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FatEar</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+    }
+    
+    a {
+      text-decoration: none;
+      color: black;
+    }
+    
+    .container {
+      width: 500px;
+      margin: auto;
+      text-align: center;
+    }
+    
+    h1 {
+      text-align: center;
+    }
+    
+    .button {
+      background-color: #0000FF;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+  </style>
 </head>
-
 <body>
-	<a href="/login">Login</a>
-	<br>
-	<a href="/register">Register</a>
-	<br>
-	<a href="/browse">Browse Songs</a>
+  <div class="container">
+    <h1>FatEar</h1>
+    <a href="/login" class="button">Login</a>
+    <a href="/register" class="button">Register</a>
+    <a href="/showsearchBar" class="button">Browse Songs</a>
+  </div>
 </body>
-
 </html>

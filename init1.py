@@ -62,65 +62,72 @@ def hello():
 def show_bar():
     return render_template('browse.html')
 
-@app.route("/searchSong", methods=['GET','POST'])
-def search_post():
+@app.route("/searchSong_genre", methods=['POST'])
+def searchSong_genre():
     cursor = conn.cursor()
-    genre_input = request.form['genre']
-    rating_input = request.form['rating']
-    fname_input, lname_input = request.form['artist']
+    genre = request.form['genre']
+    # rating_input = request.form['rating']
+    # fname_input, lname_input = request.form['artist']
+    query = 'SELECT songID, title FROM song NATURAL JOIN songGenre WHERE genre = "%s"'
+    cursor.execute(query, (genre))
+    data = cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    return render_template('browse.html',posts=data)
+    # return render_template('browse.html')
     #User inputs all 3
-    if genre_input is not None and rating_input is not None and fname_input is not None and lname_input != '':
-        query = 'SELECT songID, title, artist FROM song WHERE genre = %s AND stars = %s '
-        cursor.execute(query, (genre_input, rating_input, lname_input, fname_input))
-        data = cursor.fetchall()
-        conn.commit()
-        cursor.close()
-        return render_template('show_search.html', posts = data)
-    # User only inputs genre
-    elif genre_input is not None and rating_input is None and fname_input is None and lname_input is None:
-        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE genre = (genre_input) VALUES (%s)'
-        cursor.execute(query, (genre_input))
-        data = cursor.fetchall()
-        conn.commit()
-        cursor.close()
-        return render_template('show_search.html', posts = data)
-    #User only inputs rating
-    elif genre_input is None and rating_input is not None and fname_input is None and lname_input is None:
-        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE stars = (rating_input) VALUES (%s)'
-        cursor.execute(query, (rating_input))
-        conn.commit()
-        cursor.close()
-        return render_template('show_search.html', posts = data)
-    #User only inputs artist
-    elif genre_input is None and rating_input is None and fname_input is not None and lname_input is not None:
-        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE fname = (fname_input) and lname = (lname_input) VALUES (%s,%s)'
-        cursor.execute(query, (lname_input, fname_input))
-        conn.commit()
-        cursor.close()
-        return render_template('show_search.html', posts = data)
-    #User inputs genre and rating but no artist
-    elif genre_input is not None and rating_input is not None and fname_input is None and lname_input is None:
-        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE genre = (genre_input) and stars = (rating_input) VALUES (%s,%s)'
-        cursor.execute(query, (genre_input, rating_input))
-        conn.commit()
-        cursor.close()
-        return render_template('show_search.html', posts = data)
-    #User inputs genre and artist but no rating
-    elif genre_input is not None and rating_input is None and fname_input is not None and lname_input is not None:
-        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE genre = (genre_input) and fname = (fname_input) and lname = (lname_input) VALUES (%s,%s,%s)'
-        cursor.execute(query, (genre_input, lname_input, fname_input))
-        conn.commit()
-        cursor.close()
-        return render_template('show_search.html', posts = data)
-    #User inputs rating and artist but not genre
-    elif genre_input is None and rating_input is not None and fname_input is not None and lname_input is not None:
-        query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE stars = (rating_input) and fname = (fname_input) and lname = (lname_input) VALUES (%s,%s,%s)'
-        cursor.execute(query, (rating_input, lname_input, fname_input))
-        conn.commit()
-        cursor.close()
-        return render_template('show_search.html', )
-    else:
-         return redirect(url_for('index'))
+    # if genre_input is not None and rating_input is not None and fname_input is not None and lname_input != '':
+    #     query = 'SELECT songID, title, artist FROM song WHERE genre = %s AND stars = %s '
+    #     cursor.execute(query, (genre_input, rating_input, lname_input, fname_input))
+    #     data = cursor.fetchall()
+    #     conn.commit()
+    #     cursor.close()
+    #     return render_template('show_search.html', posts = data)
+    # # User only inputs genre
+    # elif genre_input is not None and rating_input is None and fname_input is None and lname_input is None:
+    #     query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE genre = (genre_input) VALUES (%s)'
+    #     cursor.execute(query, (genre_input))
+    #     data = cursor.fetchall()
+    #     conn.commit()
+    #     cursor.close()
+    #     return render_template('show_search.html', posts = data)
+    # #User only inputs rating
+    # elif genre_input is None and rating_input is not None and fname_input is None and lname_input is None:
+    #     query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE stars = (rating_input) VALUES (%s)'
+    #     cursor.execute(query, (rating_input))
+    #     conn.commit()
+    #     cursor.close()
+    #     return render_template('show_search.html', posts = data)
+    # #User only inputs artist
+    # elif genre_input is None and rating_input is None and fname_input is not None and lname_input is not None:
+    #     query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE fname = (fname_input) and lname = (lname_input) VALUES (%s,%s)'
+    #     cursor.execute(query, (lname_input, fname_input))
+    #     conn.commit()
+    #     cursor.close()
+    #     return render_template('show_search.html', posts = data)
+    # #User inputs genre and rating but no artist
+    # elif genre_input is not None and rating_input is not None and fname_input is None and lname_input is None:
+    #     query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE genre = (genre_input) and stars = (rating_input) VALUES (%s,%s)'
+    #     cursor.execute(query, (genre_input, rating_input))
+    #     conn.commit()
+    #     cursor.close()
+    #     return render_template('show_search.html', posts = data)
+    # #User inputs genre and artist but no rating
+    # elif genre_input is not None and rating_input is None and fname_input is not None and lname_input is not None:
+    #     query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE genre = (genre_input) and fname = (fname_input) and lname = (lname_input) VALUES (%s,%s,%s)'
+    #     cursor.execute(query, (genre_input, lname_input, fname_input))
+    #     conn.commit()
+    #     cursor.close()
+    #     return render_template('show_search.html', posts = data)
+    # #User inputs rating and artist but not genre
+    # elif genre_input is None and rating_input is not None and fname_input is not None and lname_input is not None:
+    #     query = 'SELECT songID, title, lname, fname, albumID FROM song NATURAL JOIN artistPerformsSong NATURAL JOIN artist NATURAL JOIN songInAlbum NATURAL JOIN songGenre WHERE stars = (rating_input) and fname = (fname_input) and lname = (lname_input) VALUES (%s,%s,%s)'
+    #     cursor.execute(query, (rating_input, lname_input, fname_input))
+    #     conn.commit()
+    #     cursor.close()
+    #     return render_template('show_search.html', )
+    # else:
+    #      return redirect(url_for('index'))
 
 @app.route('/rateSong', methods=['GET','POST'])
 def rateSong():
@@ -210,17 +217,29 @@ def show():
     cursor.close()
     return render_template('showFriendRequest.html',posts=data)
 
-@app.route("/sendFriendRequest", methods=['GET','POST'])
-def send():
+@app.route("/showsendFriendRequest", methods=['GET','POST'])
+def showsendFriendRequest():
     username=session['username']
     cursor = conn.cursor()
-    query = 'SELECT requestSentBy FROM friend WHERE user2=%s AND acceptStatus="Pending"'
+    query = 'SELECT username FROM user WHERE username!=%s'
     cursor.execute(query,(username))
     data=cursor.fetchall()
     conn.commit()
     cursor.close()
-    return render_template('showFriendRequest.html',posts=data)
+    return render_template('showsendFriendRequest.html',poster_name=username,posts=data)
 
+@app.route("/sendFriendRequest",methods=['POST'])
+def sendFriendRequest():
+    username=session['username']
+    cursor=conn.cursor()
+    user2_input=request.form['user2']
+    status = "Pending"
+    query = 'INSERT INTO friend (user1, user2, acceptStatus, requestSentBy) values(%s, %s, %s, %s)'
+    cursor.execute(query,(username, user2_input,status,username))
+    data = cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    return redirect(url_for('home'))
 
 @app.route('/submit-data', methods=['POST'])
 def submit_data():

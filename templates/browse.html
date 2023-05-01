@@ -7,8 +7,8 @@
 </head>
 <body>
   <h1>Browse Music</h1>
-  <form action="/searchSong" method="GET">
-    <input type="text" name="genre" placeholder="Genre">
+  <form action="/searchSong_genre" method="POST">
+    <input type="text" name="genre" placeholder="genre">
     <input type="number" name="rating" placeholder="Rating Threshold">
     <input type="text" name="artist" placeholder="Artist">
     <input type="submit" value="Search">
@@ -17,9 +17,9 @@
  <ul>
   {% for line in posts %}
 <table>
-    <li>song: {{line.title}}</li>
+    <li>song: {{line.songID}}</li>
   <tr>
-    <td>artist: {{line.artist}}</td>
+    <td>artist: {{line.title}}</td>
 </tr>
 </table>
   {% endfor %}

@@ -3,7 +3,6 @@ from datetime import date
 from flask import Flask, render_template, request, session, url_for, redirect, flash
 import pymysql.cursors
 import hashlib
-
 #for uploading photo:
 from app import app
 #from flask import Flask, flash, request, redirect, render_template
@@ -219,7 +218,7 @@ def reviewFriendFollower():
     username_input = session['username']
     cursor = conn.cursor()
 
-    query = 'SELECT reviewText FROM reviewSong, friend WHERE reviewSong.username <> %s AND (friend.user1 = %s OR friend.user2 = %s) AND friend.acceptStatus = "Accepted"'
+    query = 'SELECT reviewText, username FROM reviewSong, friend WHERE reviewSong.username <> %s AND (friend.user1 = %s OR friend.user2 = %s) AND friend.acceptStatus = "Accepted"'
     cursor.execute(query, (username_input,username_input,username_input))
     data = cursor.fetchall()
 
@@ -243,8 +242,8 @@ def loginAuth():
     #grabs information from the forms
     username = request.form['username']
     password = request.form['password']
-
-    #hashing
+    
+    # DIO THIS IS THE HASHING PART
     password = password + 'salt'
     password = hashlib.md5(password.encode()).hexdigest()
 
@@ -399,9 +398,10 @@ def registerAuth():
         error = "This user already exists"
         return render_template('register.html', error = error)
     else:
-        #hashing
+        # DIO THIS IS THE HASHING PART
         password = password + 'salt'
         password = hashlib.md5(password.encode()).hexdigest()
+        
         ins = 'INSERT INTO user VALUES(%s, %s)'
         cursor.execute(ins, (username, password))
         conn.commit()

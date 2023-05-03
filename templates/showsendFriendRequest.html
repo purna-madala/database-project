@@ -10,8 +10,9 @@
 </style>
 
 Hi {{poster_name}}, here are the other users:
-
+<br>
 <table>
+	<br>
 	<th>Users</th>
 
 {% for line in posts %}
@@ -21,8 +22,13 @@ Hi {{poster_name}}, here are the other users:
 {% endfor %}
 </table>
 <form action="/sendFriendRequest" method="POST">
-    <label for="input-box">Enter username:</label>
-    <input type="text" id="user2" name="user2">
+	<br>
+	<select name="user2">
+		<option value="user2">-- Select a user --</option>
+		{% for line in posts %}
+		  <option value="{{line.username}}">{{line.username}}</option>
+		{% endfor %}
+	  </select>
   
     <button type="submit" name="submit-btn" value="sendRequest">Send Friend Request</button>
   </form>

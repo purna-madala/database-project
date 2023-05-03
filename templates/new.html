@@ -11,9 +11,9 @@
   <ul>
   {% for review in new_reviews %}
     <li>
-      <a href="/review/{{ review.id }}">{{ review.title }}</a>
-      by {{ review.author.username }}
-      on {{ review.created_at }}
+      {{ review.reviewText }}
+      by {{ review.username }}
+      on {{ review.reviewDate }}
     </li>
   {% endfor %}
   </ul>
@@ -21,9 +21,9 @@
   <ul>
   {% for song in new_songs %}
     <li>
-      <a href="/song/{{ song.id }}">{{ song.title }}</a>
-      by {{ song.artist.name }}
-      on {{ song.created_at }}
+      {{ song.title }}
+      by {{ song.artist }}
+      on {{ song.releaseDate }}
     </li>
   {% endfor %}
   </ul>

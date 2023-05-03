@@ -30,17 +30,30 @@ Here are your posts:
 
 <form action="/rateSong" method="POST">
 	<h1>Rate a Song!</h1> 
-	<input type="text" name = "Song" placeholder="Song ID" required/> </br>
+	<h1>Select a Song</h1>
+	<select name="Song">
+	  <option value="Song">-- Select a Song --</option>
+	  {% for song in songs %}
+		<option value="{{song.songID}}">{{song.title}}</option>
+	  {% endfor %}
+	</select>
 	<input type="text" name = "rateSong" placeholder="Song Rating" required/> </br>
 	<input type="submit" value = "Submit Rating" />
+	
 </form>
 
 <form action="/reviewSong" method="POST">
 	<h1>Review a Song!</h1> 
-	<input type="text" name = "Song" placeholder="Song ID" required/> </br>
+	<select name="Song">
+		<option value="Song">-- Select a Song --</option>
+		{% for song in songs %}
+		  <option value="{{song.songID}}">{{song.title}}</option>
+		{% endfor %}
+	  </select>
 	<input type="text" name = "reviewSong" placeholder="Song Review" required/> </br>
 	<input type="submit" value = "Submit Review" />
 </form>
+
 
 <a href="/select_blogger">Select a blogger</a>
 <br>
@@ -50,7 +63,7 @@ Here are your posts:
 <br>
 <a href="/upload_form">Upload a photo</a>
 <br>
-<a href="/showsearchBar">Browse Songs</a>
+<a href="/showSearchBar">Browse Songs</a>
 <br>
 <a href="/artistFan">New Songs by Artist you are a Fan of</a>
 <br>

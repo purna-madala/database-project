@@ -9,20 +9,32 @@
 	}
 </style>
 
-Hi {{username}}, here are your friend requests:
 
 <table>
-	<th>Requests</th>
-
+	<th>Current Friend Request:</th>
+<br>
 {% for line in posts %}
 	<tr>
 		<td>{{line.requestSentBy}}</td>
 	</tr>
 {% endfor %}
 </table>
-<form method="POST" action="/submit-data">
-    <label for="input-box">Enter username:</label>
-    <input type="text" id="input-box" name="input-data">
+
+<br>
+<br>
+<br>
+
+
+
+<form action="/submit-data" method="POST">
+    <label for="input-box">Accept or Reject Request:</label> <br>
+	<br>
+	<select name="input-data">
+		<option value="input-data">-- Select a user --</option>
+		{% for line in posts %}
+		  <option value="{{line.requestSentBy}}">{{line.requestSentBy}}</option>
+		{% endfor %}
+	  </select>
   
     <button type="submit" name="submit-btn" value="Accepted">Accept</button>
     <button type="submit" name="submit-btn" value="Not accepted">Reject</button>
@@ -30,8 +42,7 @@ Hi {{username}}, here are your friend requests:
 <br>
 <br>
 <br>
-<a href="/home">Post a message</a>
-<br>
+<a href="/home">Home</a>
 <br>
 <a href="/logout">Logout</a>
 

@@ -2,6 +2,7 @@
 from datetime import date
 from flask import Flask, render_template, request, session, url_for, redirect, flash
 import pymysql.cursors
+import hashlib
 
 #for uploading photo:
 from app import app
@@ -243,6 +244,10 @@ def loginAuth():
     username = request.form['username']
     password = request.form['password']
 
+    #hashing
+    password = password + 'salt'
+    password = hashlib.md5(password.encode()).hexdigest()
+
     #cursor used to send queries
     cursor = conn.cursor()
     #executes query
@@ -394,6 +399,9 @@ def registerAuth():
         error = "This user already exists"
         return render_template('register.html', error = error)
     else:
+        #hashing
+        password = password + 'salt'
+        password = hashlib.md5(password.encode()).hexdigest()
         ins = 'INSERT INTO user VALUES(%s, %s)'
         cursor.execute(ins, (username, password))
         conn.commit()
